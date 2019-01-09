@@ -1,39 +1,45 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {Link} from 'react-router-dom'
+import {Link, NavLink} from 'react-router-dom'
 import {logout} from '../store'
+import {Menu, Container} from 'semantic-ui-react'
 
-const Navbar = ({handleClick, isLoggedIn}) => (
-  <div>
-    <h1>BOILERMAKER</h1>
-    <nav>
-      {isLoggedIn ? (
-        <div>
-          {/* The navbar will show these links after you log in */}
-          <Link to="/home">Home</Link>
-          <a href="#" onClick={handleClick}>
-            Logout
-          </a>
-        </div>
-      ) : (
-        <div>
-          {/* The navbar will show these links before you log in */}
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Sign Up</Link>
-        </div>
-      )}
-    </nav>
-    <hr />
-  </div>
-)
+class Navbar extends Component {
+  constructor() {
+    super()
+    this.state = {activeItem: 'home'}
+  }
+  handleItemClick = (e, {name}) => this.setState({activeItem: name})
 
-/**
- * CONTAINER
- */
-const mapState = state => {
-  return {
-    isLoggedIn: !!state.user.id
+  render() {
+    const {activeItem} = this.state
+    return (
+      <Container style={{padding: '10px'}}>
+        <Menu inverted>
+          <NavLink to="/home">
+            <Menu.Item
+              name="home"
+              active={activeItem === 'home'}
+              onClick={this.handleItemClick}
+            />
+          </NavLink>
+          <NavLink to="/book">
+            <Menu.Item
+              name="My Books"
+              active={activeItem === 'My Books'}
+              onClick={this.handleItemClick}
+            />
+          </NavLink>
+          <NavLink to="/search">
+            <Menu.Item
+              name="Search"
+              active={activeItem === 'Search'}
+              onClick={this.handleItemClick}
+            />
+          </NavLink>
+        </Menu>
+      </Container>
+    )
   }
 }
 
@@ -45,12 +51,4 @@ const mapDispatch = dispatch => {
   }
 }
 
-export default connect(mapState, mapDispatch)(Navbar)
-
-/**
- * PROP TYPES
- */
-Navbar.propTypes = {
-  handleClick: PropTypes.func.isRequired,
-  isLoggedIn: PropTypes.bool.isRequired
-}
+export default connect(null, mapDispatch)(Navbar)
