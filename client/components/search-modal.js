@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {Button, Header, Image, Modal, Icon, Form} from 'semantic-ui-react'
 import {getBookList} from '../store/books'
+// import rocketBook from './../../public/rocket-book.png'
 
 class SearchModal extends Component {
   constructor(props) {
@@ -25,6 +26,8 @@ class SearchModal extends Component {
   close = () => this.setState({open: false})
 
   inputReference = () => React.createRef()
+  handleValidate = () =>
+    this.state.author ? true : this.state.title ? true : false
 
   handleClick = () => {
     this.setState({open: false})
@@ -36,19 +39,25 @@ class SearchModal extends Component {
     })
   }
 
-  handleSubmit(event) {
+  handleSubmit = async event => {
     event.preventDefault()
-    const author = this.state.author.split(' ').join('+')
-    const title = this.state.title.split(' ').join('+')
-    this.props.getBookList({author, title})
-    this.setState({open: false})
-    location.pathname = '/book'
+    if (this.handleValidate()) {
+      const author = this.state.author.split(' ').join('+')
+      const title = this.state.title.split(' ').join('+')
+      await this.props.getBookList({author, title})
+      this.setState({open: false})
+      this.props.history.push('/book')
+    } else {
+      alert('You forgot to put in your search terms')
+    }
   }
 
   handleItemClick = (event, {name}) => this.setState({activeItem: name})
 
   render() {
     const {open, dimmer} = this.state
+    const bookImage =
+      'http://iconutopia.com/wp-content/uploads/2016/06/rocket-book.png'
 
     return (
       <div>
@@ -57,12 +66,25 @@ class SearchModal extends Component {
           <Icon name="right arrow" />
         </Button>
 
-        <Modal inverted="true" dimmer={dimmer} open={open} onClose={this.close}>
-          <Modal.Header inverted="true">Select a Photo</Modal.Header>
+        <Modal
+          closeIcon
+          inverted="true"
+          dimmer={dimmer}
+          open={open}
+          onClose={this.close}
+        >
+          <Modal.Header inverted="true">Search for a Book</Modal.Header>
           <Modal.Content image>
-            <Image wrapped size="medium" src="images/avatar/large/rachel.png" />
+            <Image
+              style={{
+                width: null,
+                height: 200
+              }}
+              size="small"
+              src={bookImage}
+            />
             <Modal.Description>
-              <Header>Default Image</Header>
+              <Header>Simple Search</Header>
               <Form ref={this.inputReference} onSubmit={this.handleSubmit}>
                 <Form.Group widths="equal">
                   <Form.Input
@@ -87,41 +109,32 @@ class SearchModal extends Component {
                 <Button type="button" color="black" onClick={this.close}>
                   Back
                 </Button>
-                <Link to="/book">
-                  <Button
-                    type="submit"
-                    to="/book"
-                    color="green"
-                    onClick={this.handleSubmit}
-                  >
-                    Search
-                    <Icon name="right arrow" />
-                  </Button>
-                </Link>
+                <Button
+                  type="submit"
+                  to="/book"
+                  color="green"
+                  onClick={this.handleSubmit}
+                >
+                  Search
+                  <Icon name="right arrow" />
+                </Button>
               </Form>
+              <br />
               <p>
                 The Search is Optimized to find books by Author and / or Title
               </p>
-              <p>If you want additional search options you can click here !</p>
             </Modal.Description>
           </Modal.Content>
-          <Modal.Actions>
-            {/* <Button color="black" onClick={this.close}>
-              Back
-            </Button>
-            <Button type="submit" color="green" onClick={this.handleSubmit}>
-              Search
-              <Icon name="right arrow" />
-            </Button> */}
-          </Modal.Actions>
         </Modal>
       </div>
     )
   }
 }
 
-const mapStateToProps = ({bookList}) => ({bookList})
+const mapStateToProps = ({books}) => ({books})
 
 const mapDispatchToProps = {getBookList}
 
-export default connect(mapStateToProps, mapDispatchToProps)(SearchModal)
+const connector = connect(mapStateToProps, mapDispatchToProps)(SearchModal)
+
+export default withRouter(connector)
