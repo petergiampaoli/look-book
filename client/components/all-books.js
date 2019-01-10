@@ -63,7 +63,6 @@ class AllBooks extends Component {
   }
 
   render() {
-    console.log('IN THE ALL BOOKS', this.props.books)
     const {bookList} = this.props.books
     const filter = [{text: 'Available On Amazon'}]
     const sort = [

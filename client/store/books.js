@@ -35,11 +35,11 @@ export const getBookList = searchTerms => async dispatch => {
   try {
     if (searchTerms.author) {
       const resAuthor = await axios.get(
-        `http://openlibrary.org/search.json?author=${searchTerms.author}`
+        `https://openlibrary.org/search.json?author=${searchTerms.author}`
       )
       if (searchTerms.title) {
         const resTitle = await axios.get(
-          `http://openlibrary.org/search.json?title=${searchTerms.title}`
+          `https://openlibrary.org/search.json?title=${searchTerms.title}`
         )
         // resAuthor.data.docs.forEach((book, i) => {
         //   resArray.push(book)
@@ -53,7 +53,7 @@ export const getBookList = searchTerms => async dispatch => {
       }
     } else {
       const resTitle = await axios.get(
-        `http://openlibrary.org/search.json?title=${searchTerms.title}`
+        `https://openlibrary.org/search.json?title=${searchTerms.title}`
       )
       dispatch(getBooks(resTitle.data.docs))
     }
@@ -64,7 +64,7 @@ export const getBookList = searchTerms => async dispatch => {
 
 export const getWithAuthor = author => async dispatch => {
   const res = await axios.get(
-    `http://openlibrary.org/search.json?author=${author}`
+    `https://openlibrary.org/search.json?author=${author}`
   )
   dispatch(getAuthor(res.data.docs))
 }
